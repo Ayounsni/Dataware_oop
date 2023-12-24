@@ -12,13 +12,13 @@ UX/UI
 BOOTSTRAP
 UML
 ## Mission
-# Identify OOP Areas:
+### Identify OOP Areas:
 
 Locate sections in the code suitable for an OOP approach.
-# Convert to Classes and Objects:
+### Convert to Classes and Objects:
 
 Transform key elements into classes and objects.
 Apply OOP concepts (encapsulation, inheritance, polymorphism).
-# Apply OOP Concepts:
+### Apply OOP Concepts:
 
 Utilize relevant OOP concepts for enhanced code structure.
