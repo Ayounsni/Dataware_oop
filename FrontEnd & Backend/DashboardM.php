@@ -1,14 +1,14 @@
 <?php
-include "connexion.php";
-$message="";
 session_start();
 if($_SESSION['autoriser'] != "oui"){
   header("Location: index.php");
   exit();
-  
-
 }
+require_once "src/ProductOwner.php";
 $user= $_SESSION['username'];
+
+$affichage = new ProductOwner();
+$projects = $affichage->displayProjet();
 
 ?>
 <!DOCTYPE html>
@@ -82,28 +82,24 @@ $user= $_SESSION['username'];
                                 </tr>
                             </thead>
                             <?php
-                    $req = mysqli_query($conn, "SELECT * FROM projets LEFT JOIN users ON projets.scrum_master_id = users.id_user");
-                    if (mysqli_num_rows($req) == 0) {
-                        $message = "Il n'y a pas encore de projets.";
-                    } else {
-                        while ($row = mysqli_fetch_array($req)) {
+                   foreach ($projects as $projet)  {
                             ?>
                             <tbody class="table-light">
                                 <tr>
-                                    <td><?= $row['nom_projet']; ?></td>
-                                    <td><?php echo $row['date_debut']; ?></td>
-                                    <td><?php echo $row['date_fin']; ?></td>
-                                    <td><?php echo $row['status_projet']; ?></td>
-                                    <td><?php echo $row['Last_name']; ?></td>
-                                    <td><a href="modifier.php?id=<?= $row['id_projets'] ?>" class="ms-4"><i
+                                    <td><?php echo $projet->getNomProjet(); ?></td>
+                                    <td><?php echo $projet->getDateDebut(); ?></td>
+                                    <td><?php echo $projet->getDateFin(); ?></td>
+                                    <td><?php echo $projet->getStatusProjet(); ?></td>
+                                    <td><?php echo $projet->getScrumMaster(); ?></td>
+                                    <td><a href="modifier.php?id=<?= $projet->getIdProjets() ?>" class="ms-4"><i
                                                 class="bi bi-pencil"></i></a></td>
-                                    <td><a href="supprimer.php?id=<?= $row['id_projets'] ?>" class="text-danger ms-4"><i
-                                                class="bi bi-trash3-fill"></i></a></td>
+                                    <td><a href="supprimer.php?id=<?= $projet->getIdProjets() ?>"
+                                            class="text-danger ms-4"><i class="bi bi-trash3-fill"></i></a></td>
                                 </tr>
                             </tbody>
                             <?php
                         }
-                    }
+                    
                     ?>
                         </table>
                     </div>
@@ -111,7 +107,7 @@ $user= $_SESSION['username'];
             </div>
         </div>
 
-        <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p>
+        <!-- <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p> -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

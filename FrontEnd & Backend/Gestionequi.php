@@ -1,16 +1,14 @@
 <?php
-include "connexion.php";
-$message="";
-$msg="";
 session_start();
 if($_SESSION['autoriser'] != "oui"){
   header("Location: index.php");
   exit();
-  
-
 }
+require_once "src/ScrumMaster.php";
 $user= $_SESSION['username'];
 $membre= $_SESSION['id'];
+$gestion = new ScrumMaster();
+
 
 ?>
 <!DOCTYPE html>
@@ -63,37 +61,35 @@ $membre= $_SESSION['id'];
         <div class=" d-flex justify-content-center ">
             <div class="col-md-10 px-2 ">
                 <?php
-        $resultat=mysqli_query($conn,"SELECT * FROM equipes WHERE scrum_master_id=$membre ");
-        if(mysqli_num_rows($resultat) == 0){
-          $msg="Il n'y a pas encore d'équipe.";
-          
-         } else{
-        while($row=mysqli_fetch_assoc($resultat)){
-          $equipe_id = $row['id_equipe'];
-          $equipe_nom = $row['Name_equipe'];
-          echo  "<h3 class='mt-4 text-primary'> Les membres d'équipe $equipe_nom : <a class='bg-primary rounded-3 text-light text-decoration-none btn' href='Ajouter_membre.php?equipe_id=$equipe_id'>Ajouter un membre</a> </h3>";
+        $equipes = $gestion->displayEquipe($membre);
+        foreach ($equipes as $equipe){
+          $equipeId = $equipe->getIdEquipe();
+          $equipe_nom = $equipe->getNameEquipe();
+          echo  "<h3 class='mt-4 text-primary'> Les membres d'équipe $equipe_nom : <a class='bg-primary rounded-3 text-light text-decoration-none btn' href='Ajouter_membre.php?equipe_id=$equipeId'>Ajouter un membre</a> </h3>";
 
-          $membres_result = mysqli_query($conn, "SELECT * FROM users WHERE id_equip = $equipe_id AND role = 'user' ");
-          if(mysqli_num_rows($membres_result) == 0){
-            echo "<h6 class='text-danger'> Il n'y a pas encore de membre. </h6>";
-            
-           } else{
+    
+            echo "<h6 class='text-danger'> $gestion->errore  </h6>";
           echo "<ul class='list-unstyled mt-4'>";
-          while ($membre_row = mysqli_fetch_assoc($membres_result)) {
-              $membre_prenom = $membre_row['First_name'];
-              $membre_nom = $membre_row['Last_name'];
-              $membre_id = $membre_row['id_user'];
+          $users = $gestion-> getMembresByEquipe($equipeId);
+          if($users === null){
+            echo "";
+          }else{
+          foreach ($users as $user) {
+              $membre_prenom = $user['First_name'];
+              $membre_nom = $user['Last_name'];
+              $membre_id = $user['id_user'];
   
-              // Afficher chaque membre avec un bouton pour le supprimer
+
               echo "<div class='d-flex justify-content-between w-25 mb-3 mt-3 flex-wrap'><li class='fs-5'>$membre_prenom $membre_nom </li>
                 <a class='bg-danger rounded-3 text-light text-decoration-none btn ' href='supprimer_membre.php?membre_id=$membre_id'>Supprimer</a></div>";
-           }      
-          }
+           } 
+        }     
+          
         } 
-      }
+      
       
         ?>
-                <h2 class="text-danger mt-5 text-center"><?php echo $msg; ?></h2>
+
 
             </div>
         </div>

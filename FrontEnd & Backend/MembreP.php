@@ -1,13 +1,13 @@
 <?php
-include "connexion.php";
-$message="";
 session_start();
 if($_SESSION['autoriser'] != "oui"){
   header("Location: index.php");
   exit();
-  
 }
+require_once "src/ProductOwner.php";
 $user= $_SESSION['username'];
+$productOwner = new ProductOwner();
+$users = $productOwner->getUsersWithRole();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -71,36 +71,30 @@ $user= $_SESSION['username'];
                                 </tr>
                             </thead>
                             <?php
-             $req = mysqli_query($conn,"SELECT * FROM users WHERE role IN ('scrum_master', 'user')");
-             if(mysqli_num_rows($req) == 0){
-              $message="Il n'y a pas encore de projets.";
-              
-             } else{
-              while($row=mysqli_fetch_array($req) ){
+                              foreach ($users as $user) {
+           
                 ?>
                             <tbody class="table-light ">
                                 <tr>
-                                    <td><?= $row['Last_name'];?></td>
-                                    <td><?php echo $row['First_name'];?></td>
-                                    <td><?php echo $row['email'];?></td>
-                                    <td><?php echo $row['role'];?></td>
-                                    <td><a href="modifierRole.php?id=<?=$row['id_user']?>" class="ms-5"><i
+                                    <td><?= $user['Last_name'];?></td>
+                                    <td><?php echo $user['First_name'];?></td>
+                                    <td><?php echo $user['email'];?></td>
+                                    <td><?php echo $user['role'];?></td>
+                                    <td><a href="modifierRole.php?id=<?=$user['id_user']?>" class="ms-5"><i
                                                 class="bi bi-pencil"></i></a></th>
 
 
                                 </tr>
                             </tbody>
-
                             <?php
-              }
-             }  ?>
+                           }  ?>
 
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p>
+        <!-- <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p> -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

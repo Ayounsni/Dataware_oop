@@ -1,15 +1,15 @@
 <?php
-include "connexion.php";
-$message="";
 session_start();
 if($_SESSION['autoriser'] != "oui"){
   header("Location: index.php");
   exit();
-  
-
 }
+require_once "src/User.php";
+
 $user= $_SESSION['username'];
 $membre= $_SESSION['id'];
+$display = new User();
+$equipes= $display->afficheEquipe($membre,);
 
 ?>
 <!DOCTYPE html>
@@ -66,21 +66,17 @@ $membre= $_SESSION['id'];
                                 </tr>
                             </thead>
                             <?php
-                                 $req = mysqli_query($conn,"SELECT * FROM equipes INNER JOIN users ON equipes.id_equipe = users.id_equip  WHERE id_user=$membre ");
-                                 if(mysqli_num_rows($req) == 0){
-                                 $message="Il n'y a pas encore d'équipe.";
-              
-                                  } else{
-                                      while($row=mysqli_fetch_array($req)){
+                           
+                                foreach($equipes as $equipe){
                                           ?>
                             <tbody class="table-light ">
                                 <tr>
-                                    <td><?= $row['Name_equipe'];?></td>
-                                    <td><?php echo $row['date_creation'];?></td>
+                                    <td><?= $equipe->getNameEquipe();?></td>
+                                    <td><?= $equipe->getDateCreation();?></td>
                                 </tr>
                             </tbody>
                             <?php
-                                        }
+                                        
                                    }
                                ?>
                         </table>
@@ -88,7 +84,6 @@ $membre= $_SESSION['id'];
                 </div>
             </div>
         </div>
-        <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 

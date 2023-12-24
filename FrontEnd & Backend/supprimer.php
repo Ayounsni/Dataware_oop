@@ -1,12 +1,16 @@
 <?php
-include "connexion.php";
+session_start();
+if($_SESSION['autoriser'] != "oui"){
+  header("Location: index.php");
+  exit();
+}
+require_once "src/ProductOwner.php";
 
-$id=$_GET['id'];
-$req=mysqli_query($conn, "DELETE FROM projets WHERE id_projets=$id");
-header("Location: DashboardM.php");
-
-
-
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $supprimer = new ProductOwner();
+    $supprimer->deleteProjetById($id);
+}
 
 
 ?>

@@ -1,16 +1,15 @@
 <?php
-include "connexion.php";
-$message="";
 session_start();
-// if($_SESSION['autoriser'] != "oui"){
-//   header("Location: index.php");
-//   exit();
-  
+if($_SESSION['autoriser'] != "oui"){
+  header("Location: index.php");
+  exit();
+}
+require_once "src/ScrumMaster.php";
 
-// }
 $user= $_SESSION['username'];
 $membre= $_SESSION['id'];
-
+$affichage = new ScrumMaster();
+$equipes = $affichage->displayEquipe($membre);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,21 +76,16 @@ $membre= $_SESSION['id'];
                                 </tr>
                             </thead>
                             <?php
-             $req = mysqli_query($conn,"SELECT * FROM equipes LEFT JOIN users ON equipes.scrum_master_id = users.id_user WHERE scrum_master_id=$membre");
-             if(mysqli_num_rows($req) == 0){
-              $message="Il n'y a pas encore d'équipe.";
-              
-             } else{
-              while($row=mysqli_fetch_array($req)){
-                ?>
+                   foreach ($equipes as $equipe)  {
+                            ?>
                             <tbody class="table-light ">
                                 <tr>
-                                    <td><?= $row['Name_equipe'];?></td>
-                                    <td><?php echo $row['date_creation'];?></td>
-                                    <td><?php echo $row['Last_name'];?></td>
-                                    <td><a href="modifierequi.php?id=<?=$row['id_equipe']?>" class="ms-4"><i
+                                    <td><?= $equipe->getNameEquipe();?></td>
+                                    <td><?php echo $equipe->getDateCreation() ;?></td>
+                                    <td><?php echo $equipe->getScrumMaster();?></td>
+                                    <td><a href="modifierequi.php?id=<?= $equipe->getIdEquipe();?>" class="ms-4"><i
                                                 class="bi bi-pencil"></i></a></th>
-                                    <td><a href="supprimerequi.php?id=<?=$row['id_equipe']?>"
+                                    <td><a href="supprimerequi.php?id=<?= $equipe->getIdEquipe();?>"
                                             class="text-danger ms-4"><i class="bi bi-trash3-fill"></i></a></th>
 
                                 </tr>
@@ -99,14 +93,14 @@ $membre= $_SESSION['id'];
 
                             <?php
               }
-             }
+             
              ?>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 

@@ -1,25 +1,29 @@
 <?php
+session_start();
+if (isset($_SESSION['autoriser']) && $_SESSION['autoriser'] == "oui") {
+    // The session is authorized
 
-include "src/conn.php";
-include "src/login.php";
+    if ($_SESSION['role'] == 'user') {
+        header("Location: DashboardUser.php");
+        exit();
+    } elseif ($_SESSION['role'] == 'scrum_master') {
+        header("Location: DashboardScrum.php");
+        exit();
+    } else {
+        header("Location: DashboardM.php");
+        exit();
+    }
+}
+require_once "src/Personne.php";
 
-$connexion = new connexion();
-$connexion->getConnection();
-$authentification = new Authentification($connexion);
 
+$authentification = new Personne();
 
-
-// $erreur = $authentification->getErreur();
 
 if (isset($_POST["submit"])) {
     $email = $_POST["email"];
-    // var_dump($email);
-    // exit();
-    $pass = $_POST["password"];
-    // var_dump($pass);
-    // exit();
-    $authentification->authentifierUtilisateur($email, $pass);
-    // Note: Vous pouvez gérer $erreur dans la classe Authentification si nécessaire
+    $mot_de_passe = $_POST["password"];  
+    $authentification->authentifierUtilisateur($email, $mot_de_passe);
 }
 
 ?>
@@ -67,7 +71,8 @@ if (isset($_POST["submit"])) {
                                             <input type="password" class="form-control" name="password"
                                                 id="floatingPassword" placeholder="Password">
                                             <label for="floatingPassword" class="text-secondary">Mot de passe</label>
-                                            <span class=" text-danger "></span>
+                                            <span
+                                                class=" text-danger "><?php  echo  $authentification->error  ;?></span>
                                         </div>
 
                                         <div class="pt-1 mb-4 d-flex justify-content-end">

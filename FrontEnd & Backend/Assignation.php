@@ -1,15 +1,16 @@
 <?php
-include "connexion.php";
-$message="";
 session_start();
+$user= $_SESSION['username'];
+$membre= $_SESSION['id'];
+require_once "src/ScrumMaster.php";
 if($_SESSION['autoriser'] != "oui"){
   header("Location: index.php");
   exit();
-  
-
 }
-$user= $_SESSION['username'];
-$membre= $_SESSION['id'];
+$display = new ScrumMaster();
+$projets = $display-> displayProjEqui();
+
+
 
 ?>
 <!DOCTYPE html>
@@ -74,31 +75,25 @@ $membre= $_SESSION['id'];
                             </tr>
                         </thead>
                         <?php
-             $req = mysqli_query($conn,"SELECT * FROM projets LEFT JOIN equipes ON projets.equipe_id = equipes.id_equipe ");
-             if(mysqli_num_rows($req) == 0){
-              $message="Il n'y a pas de projet.";
-              
-             } else{
-              while($row=mysqli_fetch_array($req)){
+          foreach($projets as $projets){
                 ?>
                         <tbody class="table-light ">
                             <tr>
-                                <td><?= $row['nom_projet'];?></td>
-                                <td><?php echo $row['Name_equipe'];?></td>
+                                <td><?= $projets->getNomProjet();?></td>
+                                <td><?= $projets->getEquipeId();?></td>
 
                             </tr>
                         </tbody>
 
                         <?php
               }
-             }
+             
              ?>
                     </table>
                 </div>
             </div>
         </div>
         </div>
-        <p class="text-center fs-5 fw-bolder text-danger"><?php echo $message;?></p>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
